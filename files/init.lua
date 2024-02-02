@@ -77,18 +77,20 @@ function xone.frame(px, py, sx, sy)
         px, py = xone.zone(sx, sy)
     end
 
-    for ix = px, px + (sx - 1) do
-        for iy = py, py + (sy - 1) do
-        
-        end
-    end
-end
+    gpu.fill(px, py, sx, 1, "═")
+    gpu.fill(px, py + (sy - 1), sx, 1, "═")
+    gpu.fill(px, py, 1, sy, "║")
+    gpu.fill(px + (sx - 1), py, 1, sy, "║")
 
-function xone.select(title, )
-    
+    return px, py
 end
 
 _OSVERSION = xone.version
 require = xone.require
 
 --------------------------------
+
+xone.frame(50, 16)
+while true do
+    computer.pullSignal()
+end

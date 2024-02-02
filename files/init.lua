@@ -1,7 +1,16 @@
 computer.setArchitecture("Lua 5.3")
 
+local component = component
+local computer = computer
+local unicode = unicode
+_G.component = nil
+_G.computer = nil
+_G.unicode = nil
+
 local gpu = component.proxy(component.list("gpu")() or error("no GPU found", 2))
 local screen = component.list("screen")() or error("no screen found", 2)
+local drive = component.proxy(computer.getBootAddress())
+
 gpu.bind(screen)
 gpu.setResolution(50, 16)
 local rx, ry = gpu.getResolution()
@@ -9,13 +18,6 @@ gpu.setBackground(0x000000)
 gpu.setForeground(0xffffff)
 gpu.fill(1, 1, rx, ry, " ")
 component.invoke(screen, "turnOn")
-
-local component = component
-local computer = computer
-local unicode = unicode
-_G.component = nil
-_G.computer = nil
-_G.unicode = nil
 
 --------------------------------
 
@@ -64,10 +66,15 @@ function xone.require(name)
     error("library \"" .. name .. "\" not found", 2)
 end
 
+
+function xone.invert()
+    gpu.setBackground(gpu.setForeground(gpu.getBackground()))
+end
+
 function xone.zone(sx, sy)
     local px, py = rx / 2, ry / 2
     px = px - math.floor(sx / 2)
-    px = px - math.floor(sy / 2)
+    py = py - math.floor(sy / 2)
     return xone.round(px) + 1, xone.round(py) + 1
 end
 
@@ -81,6 +88,10 @@ function xone.frame(px, py, sx, sy)
     gpu.fill(px, py + (sy - 1), sx, 1, "═")
     gpu.fill(px, py, 1, sy, "║")
     gpu.fill(px + (sx - 1), py, 1, sy, "║")
+    gpu.set(px, py, "╔")
+    gpu.set(px, py + (sy - 1), "╚")
+    gpu.set(px + (sx - 1), py, "╗")
+    gpu.set(px + (sx - 1), py + (sy - 1), "╝")
 
     return px, py
 end
